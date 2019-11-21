@@ -34,7 +34,7 @@ La connexion et l'enregistrement des utilisateurs sont déjà configurés et op�
 # Utilisation
 | URI     | Method    | Role | Action
 | ----------|-------------|--------|-------------|
-| /api/projects  | ALL   | ANY    | ANY | Lister tous les projets
+| /api/projects  | ALL   | ANY    | Lister tous les projets |
 | /api/investisment | POST | IS_AUTHENTICATED_FULLY   | Ajouter un montant à emprunter pour l'utlisateur courant |
 | /api/list/investments/{user} | GET | IS_AUTHENTICATED_FULLY   | Lister tous les montants à emprunter pour l'utlisateur courant |
 | api/thrift | GET | IS_AUTHENTICATED_FULLY   | Lister le montant d'emprunt mensuelle, le montant versé par le SCPI, la force d'épargne pour l'utlisateur courant |
