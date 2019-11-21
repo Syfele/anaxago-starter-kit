@@ -8,6 +8,8 @@
 
 namespace Anaxago\CoreBundle\Entity;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -23,6 +25,7 @@ class User implements UserInterface
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      * @ORM\Column(type="integer")
+     * @Groups({"user"})
      */
     private $id;
 
@@ -30,6 +33,7 @@ class User implements UserInterface
      * @var string
      *
      * @ORM\Column(type="string")
+     * @Groups({"user"})
      */
     private $firstName;
 
@@ -37,43 +41,65 @@ class User implements UserInterface
      * @var string
      *
      * @ORM\Column(type="string")
+     * @Groups({"user"})
      */
     private $lastName;
 
     /**
      * @var array
      * @ORM\Column(type="array")
+     * @Groups({"user"})
      */
     private $roles = ['ROLE_USER'];
 
     /**
      * @var string
      * @ORM\Column(type="string")
+     * @Groups({"password"})
      */
     private $password;
 
     /**
      * @var string
+     * @Groups({"password"})
      */
     private $plainPassword;
 
     /**
      * @var string
      * @ORM\Column(type="string", nullable=true)
+     * @Groups({"user"})
      */
     private $salt;
 
     /**
      * @var string
      * @ORM\Column(type="string")
+     * @Groups({"user"})
      */
     private $username;
 
     /**
      * @var string
      * @ORM\Column(type="string")
+     * @Groups({"user"})
      */
     private $email;
+
+    /**
+     * @var Investment
+     * @ORM\OneToMany(targetEntity="Anaxago\CoreBundle\Entity\Investment", mappedBy="user")
+     * @Groups({"investments"})
+     */
+    private $investments;
+
+    /**
+     * User constructor.
+     */
+    public function __construct()
+    {
+        $this->investments = new ArrayCollection();
+    }
 
     /**
      * @return int
@@ -276,5 +302,31 @@ class User implements UserInterface
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
+    }
+
+    /**
+     * @return Investment[]|[]
+     */
+    public function getInvestments()
+    {
+        return $this->investments->toArray();
+    }
+
+    public function addInvestment(Investment $investment)
+    {
+        if (!in_array($investment, $this->getInvestments(), true))
+        {
+            $this->investments->add($investment);
+        }
+        return $this->investments;
+    }
+
+    public function removeInvestment(Investment $investment)
+    {
+        if (in_array($investment, $this->getInvestments(), true))
+        {
+            $this->investments->removeElement($investment);
+        }
+        return $this->investments->toArray();
     }
 }

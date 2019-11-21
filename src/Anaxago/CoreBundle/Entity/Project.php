@@ -3,7 +3,7 @@
 namespace Anaxago\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * Project
  *
@@ -25,6 +25,7 @@ class Project
      * @var string
      *
      * @ORM\Column(name="slug", type="string", length=255)
+     * @Groups({"projects"})
      */
     private $slug;
 
@@ -32,6 +33,7 @@ class Project
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
+     * @Groups({"projects"})
      */
     private $title;
 
@@ -39,8 +41,17 @@ class Project
      * @var string
      *
      * @ORM\Column(name="description", type="text")
+     * @Groups({"projects"})
      */
     private $description;
+
+    /**
+     * @var Status $status
+     * @ORM\ManyToOne(targetEntity="Status", inversedBy="projects")
+     * @ORM\JoinColumn(nullable=true)
+     * @Groups({"projects"})
+     */
+    private $status;
 
 
     /**
@@ -123,6 +134,24 @@ class Project
     public function getDescription()
     {
         return $this->description;
+    }
+
+    /**
+     * @return Status
+     */
+    public function getStatus(): Status
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param Status $status
+     * @return Project
+     */
+    public function setStatus(Status $status): Project
+    {
+        $this->status = $status;
+        return $this;
     }
 }
 

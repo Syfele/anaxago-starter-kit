@@ -9,7 +9,9 @@
 namespace Anaxago\CoreBundle\DataFixtures\ORM;
 
 use Anaxago\CoreBundle\Entity\Project;
+use Anaxago\CoreBundle\Entity\Status;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
@@ -17,7 +19,7 @@ use Doctrine\Common\Persistence\ObjectManager;
  * Class ProjectFixtures
  * @package Anaxago\CoreBundle\DataFixtures\ORM
  */
-class ProjectFixtures extends Fixture
+class ProjectFixtures extends Fixture implements DependentFixtureInterface
 {
     /**
      * Load data fixtures with the passed EntityManager
@@ -26,11 +28,16 @@ class ProjectFixtures extends Fixture
      */
     public function load(ObjectManager $manager): void
     {
-        foreach ($this->getProjects() as $project) {
+        $funded = $this->getReference(StatusFixtures::FUNDED_REFERENCE);
+        $unfunded = $this->getReference(StatusFixtures::UNFUNDED_REFERENCE);
+        foreach ($this->getProjects() as $key => $project) {
+            /** @var Status $status */
+            $status = $key%2 === 0 ? $funded : $unfunded;
             $projectToPersist = (new Project())
                 ->setTitle($project['name'])
                 ->setDescription($project['description'])
-                ->setSlug($project['slug']);
+                ->setSlug($project['slug'])
+                ->setStatus($status);
             $manager->persist($projectToPersist);
         }
         $manager->flush();
@@ -58,5 +65,13 @@ class ProjectFixtures extends Fixture
                 'slug' => 'eole',
             ],
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getDependencies(): array
+    {
+        return [StatusFixtures::class];
     }
 }

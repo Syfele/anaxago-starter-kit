@@ -20,7 +20,7 @@ services:
         resource: '../../src/Anaxago/CoreBundle/*'
         # you can exclude directories or files
         # but if a service is unused, it's removed anyway
-        exclude: '../../src/Anaxago/CoreBundle/{Entity,Repository,Tests}'
+        exclude: '../../src/Anaxago/CoreBundle/{Entity,Tests}'
 
     # controllers are imported separately to make sure they're public
     # and have a tag that allows actions to type-hint services
@@ -34,3 +34,16 @@ services:
         Doctrine\Common\EventSubscriber:
             tags:
                 - { name: doctrine.event_subscriber, connection: default }
+
+    Anaxago\CoreBundle\Repository\ProjectRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        arguments:
+            - Anaxago\CoreBundle\Entity\Project
+
+    Anaxago\CoreBundle\Repository\InvestmentRepository:
+        factory: 'Doctrine\ORM\EntityManagerInterface:getRepository'
+        arguments:
+            - Anaxago\CoreBundle\Entity\Investment
+
+    Anaxago\CoreBundle\Service\InvestmentService:
+        arguments: ['@security.token_storage', %annual_rate%]
